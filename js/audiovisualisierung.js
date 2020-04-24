@@ -10,6 +10,7 @@ var loader;
 var filename;
 var fileChosen = false;
 var hasSetupUserMedia = false;
+var play = true;
 
 var AudioContext = AudioContext || webkitAudioContext;
 var context = new AudioContext();
@@ -24,8 +25,8 @@ $(function () {
 });
 
 function playSample() {
-	
 	fileChosen = true;
+	sourceNode = null;
     setupAudioNodes();
 	
 	var request = new XMLHttpRequest();
@@ -47,6 +48,28 @@ function playSample() {
 		context.decodeAudioData(request.response, function(buffer) {
 		sourceNode.buffer = buffer;
 		sourceNode.start(0);
+		
+		window.addEventListener("keydown", function(){
+			console.log(play);
+			switch (event.keyCode) {
+			  case 32: //SpaceBar                    
+				if (play) {
+					setTimeout(()=> {
+						sourceNode.stop(0)
+						 play = false;
+
+					},100)
+				} else {
+					setTimeout(()=> {
+						playSample()
+						 play = true;
+					},100)
+				}
+				break;
+			}
+			return false;
+
+		}, false);
 		$("#freq, body").addClass("animateHue");
 		}, function(e) {
 			console.log(e);
